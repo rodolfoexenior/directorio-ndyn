@@ -24,13 +24,23 @@ public function index()
         return view('admin.negocios.index', compact('negocios'));
     }
 
+
     public function show(Negocio $negocio)
     {
-        // Cargamos las relaciones para ver TODO el detalle (contactos, fotos, etc.)
-        $negocio->load(['estado', 'user', 'contacto', 'imagenes', 'productos', 'servicios']);
+        // Forzamos la carga de relaciones. 
+        // Asegúrate de que 'imagenes' sea exactamente el nombre de la función en tu modelo Negocio.
+        $negocio->load([
+            'estado', 
+            'user', 
+            'contacto', 
+            'horarios', 
+            'caracteristicas',             
+            'productos', 
+            'servicios'
+        ]);
 
         return view('admin.negocios.show', compact('negocio'));
-    }   
+    }
 
     public function updateEstado(Request $request, Negocio $negocio)
     {
