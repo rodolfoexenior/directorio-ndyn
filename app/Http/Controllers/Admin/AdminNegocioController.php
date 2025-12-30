@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Negocio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail; 
+use App\Mail\NegocioAprobadoMail;
 
 class AdminNegocioController extends Controller
 {
@@ -42,17 +44,24 @@ public function index()
         return view('admin.negocios.show', compact('negocio'));
     }
 
-    public function updateEstado(Request $request, Negocio $negocio)
+public function updateEstado(Request $request, Negocio $negocio)
     {
-        // Validamos que el estado enviado sea uno de los permitidos (1 o 2)
-        // No permitimos cambiar a 3 (eliminado) desde aquí por seguridad
         $request->validate([
             'estado_id' => 'required|in:1,2',
         ]);
 
+        // Guardamos el estado anterior para comparar
+        $estadoAnterior = $negocio->estado_id;
+
         $negocio->update([
             'estado_id' => $request->estado_id
         ]);
+
+        // LÓGICA DE ENVÍO:
+        // Si el nuevo estado es 2 (Aprobado) y antes no lo estaba
+        if ($request->estado_id == 2 && $estadoAnterior != 2) {
+            Mail::to($negocio->user->email)->send(new NegocioAprobadoMail($negocio));
+        }
 
         return back()->with('status', 'Estado del negocio actualizado correctamente.');
     }
