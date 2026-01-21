@@ -9,12 +9,15 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProductoController;      
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\Admin\AdminNegocioController;
+use App\Http\Controllers\Front\FrontController;
 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/buscar', [FrontController::class, 'buscar'])->name('front.buscar');
 
 // Rutas protegidas por el Middleware 'auth' y 'verified' (Dashboard)
 Route::get('/dashboard', function () {
